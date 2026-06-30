@@ -5,7 +5,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recha
 type CategoryData = { categoryId: string; name: string; amount: number };
 type Props = { data: CategoryData[] };
 
-const COLORS = ["#111111", "#555555", "#999999", "#C8FF00", "#E2E2E2", "#888888"];
+const COLORS = ["#FF6B6B", "#4F9EFF", "#FFD166", "#06D6A0", "#C77DFF", "#FF9F43"];
 
 export function CategoryDonut({ data }: Props) {
   if (!data.length) return null;

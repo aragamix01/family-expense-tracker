@@ -5,7 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 
 type MonthData = { month: string; amount: number };
 type Props = { data: MonthData[] };
 
-const COLORS = ["#111111", "#555555", "#999999", "#C8FF00", "#E2E2E2", "#888888"];
+const COLORS = ["#FF6B6B", "#4F9EFF", "#FFD166", "#06D6A0", "#C77DFF", "#FF9F43"];
 
 export function SpendingChart({ data }: Props) {
   return (

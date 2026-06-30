@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useLiff } from "@/contexts/LiffContext";
 import { useActivePeriod } from "@/hooks/useActivePeriod";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { Expense, Category, ExpenseSplit, Member } from "@/lib/database.types";
 
 type FullSplit = ExpenseSplit & { expense: (Expense & { category?: Category }) | null };
@@ -38,6 +39,36 @@ export function MemberDashboard() {
       </div>
 
       <div className="px-4 pt-4 flex flex-col gap-3">
+
+        {/* Skeleton */}
+        {!data && (
+          <>
+            <div className="rounded-2xl px-5 pt-5 pb-6" style={{ background: "#111" }}>
+              <Skeleton style={{ width: 80, height: 10, marginBottom: 8 }} />
+              <Skeleton style={{ width: 150, height: 48, borderRadius: "0.75rem" }} />
+              <Skeleton style={{ width: 80, height: 10, marginTop: 10 }} />
+            </div>
+            <div className="card p-4">
+              <Skeleton style={{ width: 90, height: 10, marginBottom: 16 }} />
+              {[1, 2, 3].map(i => (
+                <div key={i}>
+                  {i > 1 && <div className="divider my-3" />}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Skeleton style={{ width: 36, height: 36, borderRadius: "0.75rem" }} />
+                      <div>
+                        <Skeleton style={{ width: 110, height: 12, marginBottom: 6 }} />
+                        <Skeleton style={{ width: 80, height: 10 }} />
+                      </div>
+                    </div>
+                    <Skeleton style={{ width: 55, height: 14, borderRadius: "0.5rem" }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
         {/* Hero black card */}
         <div
           className="rounded-2xl px-5 pt-5 pb-6"

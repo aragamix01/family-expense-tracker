@@ -7,6 +7,7 @@ import { useLiff } from "@/contexts/LiffContext";
 import { useActivePeriod } from "@/hooks/useActivePeriod";
 import { SpendingChart } from "./SpendingChart";
 import { CategoryDonut } from "./CategoryDonut";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { Expense, Category, ExpenseSplit, Member } from "@/lib/database.types";
 
 type MemberDebt = { memberId: string; name: string; amount: number };
@@ -71,6 +72,71 @@ export function AdminDashboard() {
       </div>
 
       <div className="px-4 pt-4 flex flex-col gap-3">
+
+        {/* Skeleton loading state */}
+        {!data && (
+          <>
+            {/* Hero skeleton */}
+            <div className="rounded-2xl px-5 pt-5 pb-6" style={{ background: "#111" }}>
+              <div className="flex items-start justify-between mb-5">
+                <div>
+                  <Skeleton style={{ width: 90, height: 10, marginBottom: 10 }} />
+                  <Skeleton style={{ width: 160, height: 48, borderRadius: "0.75rem" }} />
+                </div>
+                <Skeleton style={{ width: 64, height: 20, borderRadius: 999, background: "rgba(255,255,255,0.08)", backgroundImage: "none" }} />
+              </div>
+              <div className="divider" style={{ background: "rgba(255,255,255,0.1)" }} />
+              <div className="flex items-center justify-between mt-4">
+                <div>
+                  <Skeleton style={{ width: 60, height: 10, marginBottom: 8 }} />
+                  <Skeleton style={{ width: 100, height: 28, borderRadius: "0.5rem" }} />
+                </div>
+                <Skeleton style={{ width: 110, height: 38, borderRadius: "1rem" }} />
+              </div>
+            </div>
+            {/* Member debts skeleton */}
+            <div className="card p-4">
+              <Skeleton style={{ width: 120, height: 10, marginBottom: 16 }} />
+              {[1, 2].map(i => (
+                <div key={i}>
+                  {i > 1 && <div className="divider my-3" />}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Skeleton style={{ width: 36, height: 36, borderRadius: "0.625rem" }} />
+                      <div>
+                        <Skeleton style={{ width: 70, height: 12, marginBottom: 6 }} />
+                        <Skeleton style={{ width: 110, height: 10 }} />
+                      </div>
+                    </div>
+                    <Skeleton style={{ width: 64, height: 22, borderRadius: 999 }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* Recent expenses skeleton */}
+            <div className="card p-4">
+              <Skeleton style={{ width: 100, height: 10, marginBottom: 16 }} />
+              {[1, 2, 3, 4].map(i => (
+                <div key={i}>
+                  {i > 1 && <div className="divider my-3" />}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Skeleton style={{ width: 36, height: 36, borderRadius: "0.75rem" }} />
+                      <div>
+                        <Skeleton style={{ width: 120, height: 12, marginBottom: 6 }} />
+                        <Skeleton style={{ width: 90, height: 10 }} />
+                      </div>
+                    </div>
+                    <Skeleton style={{ width: 60, height: 14, borderRadius: "0.5rem" }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Real content — only when data is loaded */}
+        {data && <>
 
         {/* Hero — black card, lime total */}
         <div
@@ -205,7 +271,7 @@ export function AdminDashboard() {
         </div>
 
         {/* Empty state */}
-        {data?.recentExpenses?.length === 0 && (
+        {data.recentExpenses?.length === 0 && (
           <div className="card p-10 text-center">
             <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center text-3xl" style={{ background: "#F5F5F5" }}>
               🧾
@@ -214,6 +280,8 @@ export function AdminDashboard() {
             <p className="text-sm font-500 mt-1" style={{ color: "#999" }}>แตะ + เพื่อเพิ่มรายการแรก</p>
           </div>
         )}
+
+        </>} {/* end data && */}
       </div>
     </div>
   );

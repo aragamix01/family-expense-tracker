@@ -5,6 +5,7 @@ import { AuthGuard } from "@/components/auth/AuthGuard";
 import { useActivePeriod } from "@/hooks/useActivePeriod";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { Member, Expense, Category, ExpenseSplit } from "@/lib/database.types";
 
 type FullSplit = ExpenseSplit & { expense: (Expense & { category?: Category }) | null };
@@ -76,6 +77,57 @@ function MemberDetailContent({ params }: { params: Promise<{ id: string }> }) {
         </div>
 
         <div className="px-4 pt-4 flex flex-col gap-3 pb-10">
+
+          {/* Skeleton — before member + pageData load */}
+          {(!member || !pageData) && (
+            <>
+              <div className="rounded-2xl px-5 pt-5 pb-6" style={{ background: "#111" }}>
+                <div className="flex items-center gap-4 mb-5">
+                  <Skeleton style={{ width: 56, height: 56, borderRadius: "0.875rem" }} />
+                  <div>
+                    <Skeleton style={{ width: 90, height: 16, marginBottom: 8 }} />
+                    <Skeleton style={{ width: 70, height: 10 }} />
+                  </div>
+                </div>
+                <div className="divider" style={{ background: "rgba(255,255,255,0.1)" }} />
+                <div className="flex items-center justify-between mt-4">
+                  <div>
+                    <Skeleton style={{ width: 70, height: 10, marginBottom: 8 }} />
+                    <Skeleton style={{ width: 130, height: 36, borderRadius: "0.75rem" }} />
+                  </div>
+                  <div>
+                    <Skeleton style={{ width: 60, height: 10, marginBottom: 8 }} />
+                    <Skeleton style={{ width: 50, height: 32, borderRadius: "0.5rem" }} />
+                  </div>
+                </div>
+              </div>
+              <div className="card p-4">
+                <Skeleton style={{ width: 110, height: 10, marginBottom: 16 }} />
+                {[1, 2, 3, 4, 5].map(i => (
+                  <div key={i}>
+                    {i > 1 && <div className="divider my-3" />}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Skeleton style={{ width: 36, height: 36, borderRadius: "0.75rem" }} />
+                        <div>
+                          <Skeleton style={{ width: 130, height: 12, marginBottom: 6 }} />
+                          <Skeleton style={{ width: 90, height: 10 }} />
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <Skeleton style={{ width: 60, height: 12, marginBottom: 4 }} />
+                        <Skeleton style={{ width: 45, height: 10 }} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Real content */}
+          {member && pageData && <>
+
           {/* Member hero */}
           <div
             className="rounded-2xl px-5 pt-5 pb-6"
@@ -217,6 +269,8 @@ function MemberDetailContent({ params }: { params: Promise<{ id: string }> }) {
               </div>
             )}
           </div>
+
+          </>} {/* end member && pageData */}
         </div>
       </div>
     </AuthGuard>

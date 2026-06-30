@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useLiff } from "@/contexts/LiffContext";
 import { useActivePeriod } from "@/hooks/useActivePeriod";
 import { SpendingChart } from "./SpendingChart";
@@ -46,6 +47,7 @@ export function AdminDashboard() {
     setSettling(null);
   };
 
+  const router = useRouter();
   const firstName = profile?.displayName?.split(" ")[0] ?? "คุณ";
 
   return (
@@ -117,28 +119,28 @@ export function AdminDashboard() {
                 <div key={m.memberId}>
                   {i > 0 && <div className="divider my-3" />}
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
+                    <Link
+                      href={`/members/${m.memberId}`}
+                      className="flex items-center gap-3 flex-1 active:opacity-60"
+                    >
                       <div className="avatar w-9 h-9 text-sm font-900" style={{ borderRadius: "0.625rem" }}>
                         {m.name.slice(0, 2).toUpperCase()}
                       </div>
                       <div>
                         <p className="font-700 text-sm" style={{ color: "#111" }}>{m.name}</p>
-                        <p className="text-xs font-500" style={{ color: "#999" }}>ค้างชำระ</p>
+                        <p className="text-xs font-500" style={{ color: "#999" }}>
+                          ฿{m.amount.toLocaleString()} · ดูรายละเอียด →
+                        </p>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <p className="font-900 text-base" style={{ color: "#111" }}>
-                        ฿{m.amount.toLocaleString()}
-                      </p>
-                      <button
-                        onClick={() => handleSettle(m.memberId, m.name)}
-                        disabled={settling === m.memberId}
-                        className="pill-lime disabled:opacity-40"
-                        style={{ cursor: "pointer" }}
-                      >
-                        ชำระแล้ว
-                      </button>
-                    </div>
+                    </Link>
+                    <button
+                      onClick={() => handleSettle(m.memberId, m.name)}
+                      disabled={settling === m.memberId}
+                      className="pill-lime disabled:opacity-40 ml-2"
+                      style={{ cursor: "pointer" }}
+                    >
+                      ชำระแล้ว
+                    </button>
                   </div>
                 </div>
               ))}

@@ -1,0 +1,75 @@
+{
+  "app": {
+    "title": "Family Tracker",
+    "loading": "Loading..."
+  },
+  "dashboard": {
+    "hello": "Hello",
+    "totalOwed": "Total Owed",
+    "thisPeriod": "This Period",
+    "whoOwes": "Who Owes You",
+    "settle": "Settle",
+    "spendingByCategory": "Spending by Category",
+    "recentExpenses": "Recent Expenses",
+    "monthlyTrend": "Monthly Trend",
+    "noExpenses": "No expenses yet",
+    "noExpensesHint": "Tap + to add your first one"
+  },
+  "addExpense": {
+    "title": "Add Expense",
+    "amount": "Amount (฿)",
+    "description": "Description",
+    "date": "Date",
+    "category": "Category",
+    "splitWith": "Split with",
+    "equalSplit": "Equal split",
+    "customSplit": "Custom split amounts",
+    "each": "each",
+    "save": "Add Expense",
+    "saveChanges": "Save Changes",
+    "saving": "Saving...",
+    "delete": "Delete",
+    "deleting": "Deleting...",
+    "deleteConfirm": "Delete this expense?"
+  },
+  "member": {
+    "hello": "Hello",
+    "yourBalance": "Your Balance",
+    "youOwe": "You Owe",
+    "breakdown": "Breakdown",
+    "allClear": "You're all clear!",
+    "allClearHint": "No expenses this period"
+  },
+  "register": {
+    "whoAreYou": "Who are you?",
+    "selectName": "Select your name to see what you owe.",
+    "thisIsMe": "This is me ✓",
+    "saving": "Saving...",
+    "youreIn": "You're in!",
+    "loadingDashboard": "Loading your dashboard..."
+  },
+  "settings": {
+    "title": "Settings",
+    "members": "Members",
+    "categories": "Categories",
+    "periods": "Periods",
+    "addMember": "Add member name...",
+    "add": "Add",
+    "rename": "Rename",
+    "remove": "Remove",
+    "removeConfirm": "Remove {name}? This cannot be undone.",
+    "lineLinked": "LINE linked ✓",
+    "addCategory": "Add custom category...",
+    "default": "default",
+    "activePeriod": "Active Period",
+    "started": "Started",
+    "open": "OPEN",
+    "closed": "CLOSED",
+    "closeMonth": "Close Month ✓",
+    "closing": "Closing...",
+    "newPeriod": "+ Start New Period",
+    "creating": "Creating...",
+    "pastPeriods": "Past Periods",
+    "closedOn": "Closed"
+  }
+}

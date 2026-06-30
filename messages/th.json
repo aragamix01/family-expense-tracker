@@ -1,0 +1,75 @@
+{
+  "app": {
+    "title": "Family Tracker",
+    "loading": "กำลังโหลด..."
+  },
+  "dashboard": {
+    "hello": "สวัสดี",
+    "totalOwed": "ยอดที่ค้างชำระ",
+    "thisPeriod": "งวดนี้",
+    "whoOwes": "ใครค้างชำระบ้าง",
+    "settle": "ชำระแล้ว",
+    "spendingByCategory": "ค่าใช้จ่ายตามหมวดหมู่",
+    "recentExpenses": "รายการล่าสุด",
+    "monthlyTrend": "แนวโน้มรายเดือน",
+    "noExpenses": "ยังไม่มีรายการ",
+    "noExpensesHint": "แตะ + เพื่อเพิ่มรายการแรก"
+  },
+  "addExpense": {
+    "title": "เพิ่มรายจ่าย",
+    "amount": "จำนวน (฿)",
+    "description": "รายละเอียด",
+    "date": "วันที่",
+    "category": "หมวดหมู่",
+    "splitWith": "แบ่งกับ",
+    "equalSplit": "แบ่งเท่ากัน",
+    "customSplit": "กำหนดเอง",
+    "each": "ต่อคน",
+    "save": "บันทึก",
+    "saveChanges": "บันทึกการแก้ไข",
+    "saving": "กำลังบันทึก...",
+    "delete": "ลบ",
+    "deleting": "กำลังลบ...",
+    "deleteConfirm": "ลบรายการนี้?"
+  },
+  "member": {
+    "hello": "สวัสดี",
+    "yourBalance": "ยอดของคุณ",
+    "youOwe": "คุณค้างชำระ",
+    "breakdown": "รายละเอียด",
+    "allClear": "ไม่มีรายการค้างชำระ!",
+    "allClearHint": "ไม่มีรายการในงวดนี้"
+  },
+  "register": {
+    "whoAreYou": "คุณคือใคร?",
+    "selectName": "เลือกชื่อของคุณเพื่อดูยอดค้างชำระ",
+    "thisIsMe": "นี่คือฉัน ✓",
+    "saving": "กำลังบันทึก...",
+    "youreIn": "เข้าสู่ระบบสำเร็จ!",
+    "loadingDashboard": "กำลังโหลดแดชบอร์ด..."
+  },
+  "settings": {
+    "title": "ตั้งค่า",
+    "members": "สมาชิก",
+    "categories": "หมวดหมู่",
+    "periods": "งวด",
+    "addMember": "เพิ่มสมาชิก",
+    "add": "เพิ่ม",
+    "rename": "เปลี่ยนชื่อ",
+    "remove": "ลบ",
+    "removeConfirm": "ลบ {name}? ไม่สามารถยกเลิกได้",
+    "lineLinked": "เชื่อมต่อ LINE แล้ว ✓",
+    "addCategory": "เพิ่มหมวดหมู่",
+    "default": "ค่าเริ่มต้น",
+    "activePeriod": "งวดปัจจุบัน",
+    "started": "เริ่มเมื่อ",
+    "open": "เปิด",
+    "closed": "ปิด",
+    "closeMonth": "ปิดงวด ✓",
+    "closing": "กำลังปิด...",
+    "newPeriod": "+ เริ่มงวดใหม่",
+    "creating": "กำลังสร้าง...",
+    "pastPeriods": "งวดที่ผ่านมา",
+    "closedOn": "ปิดเมื่อ"
+  }
+}

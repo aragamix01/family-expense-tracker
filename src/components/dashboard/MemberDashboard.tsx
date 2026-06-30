@@ -69,6 +69,9 @@ export function MemberDashboard() {
           </>
         )}
 
+        {/* Real content — only when data loaded */}
+        {data && <>
+
         {/* Hero black card */}
         <div
           className="rounded-2xl px-5 pt-5 pb-6"
@@ -127,13 +130,15 @@ export function MemberDashboard() {
           </div>
         )}
 
-        {data?.splits?.length === 0 && (
+        {data.splits?.length === 0 && (
           <div className="card p-10 text-center">
             <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center text-3xl" style={{ background: "#F5F5F5" }}>✅</div>
             <p className="font-800 text-base" style={{ color: "#111" }}>ไม่มีรายการค้างชำระ!</p>
             <p className="text-sm font-500 mt-1" style={{ color: "#999" }}>ไม่มีรายการในงวดนี้</p>
           </div>
         )}
+
+        </>} {/* end data && */}
       </div>
     </div>
   );

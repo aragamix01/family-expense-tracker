@@ -10,15 +10,30 @@ import { useState } from "react";
 
 type Tab = "members" | "categories" | "periods";
 
+const TAB_LABELS: Record<Tab, string> = {
+  members: "สมาชิก",
+  categories: "หมวดหมู่",
+  periods: "งวด",
+};
+
 function SettingsContent() {
   const [tab, setTab] = useState<Tab>("members");
 
   return (
     <AuthGuard require="admin">
-      <div className="min-h-screen bg-gray-50">
-        <div className="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 py-4 flex items-center gap-3">
-          <Link href="/" className="w-9 h-9 rounded-2xl bg-gray-100 flex items-center justify-center text-lg">←</Link>
-          <h1 className="text-lg font-extrabold text-gray-900">Settings</h1>
+      <div className="min-h-screen" style={{ background: "#FFF8F5" }}>
+        <div
+          className="sticky top-0 z-10 px-4 py-4 flex items-center gap-3"
+          style={{ background: "rgba(255,248,245,0.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid rgba(26,26,46,0.06)" }}
+        >
+          <Link
+            href="/"
+            className="w-9 h-9 flex items-center justify-center font-700 text-base transition-opacity active:opacity-60"
+            style={{ background: "white", borderRadius: "0.875rem", boxShadow: "0 2px 8px rgba(26,26,46,0.08)", color: "#1A1A2E" }}
+          >
+            ←
+          </Link>
+          <h1 className="font-900 text-lg" style={{ color: "#1A1A2E" }}>ตั้งค่า</h1>
         </div>
 
         {/* Tabs */}
@@ -27,16 +42,25 @@ function SettingsContent() {
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`flex-1 py-2.5 rounded-2xl text-sm font-bold capitalize transition-all ${
-                tab === t ? "bg-[#FF6B6B] text-white shadow-md" : "bg-white text-gray-500 border border-gray-100"
-              }`}
+              className="flex-1 py-2.5 text-sm font-800 transition-all duration-150"
+              style={{
+                borderRadius: "0.875rem",
+                background: tab === t
+                  ? "linear-gradient(135deg,#FF6B6B,#FF8E53)"
+                  : "white",
+                color: tab === t ? "white" : "#9CA3AF",
+                boxShadow: tab === t
+                  ? "0 4px 16px rgba(255,107,107,0.3)"
+                  : "0 2px 8px rgba(26,26,46,0.04)",
+                border: tab === t ? "none" : "1.5px solid rgba(26,26,46,0.06)",
+              }}
             >
-              {t}
+              {TAB_LABELS[t]}
             </button>
           ))}
         </div>
 
-        <div className="px-4">
+        <div className="px-4 pb-10">
           {tab === "members" && <MembersSettings />}
           {tab === "categories" && <CategoriesSettings />}
           {tab === "periods" && <PeriodsSettings />}

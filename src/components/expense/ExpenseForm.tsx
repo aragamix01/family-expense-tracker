@@ -11,13 +11,20 @@ type Props = {
   expense?: Expense & { splits?: (ExpenseSplit & { member?: Member })[]; category?: Category };
 };
 
-const CATEGORY_COLORS: Record<string, string> = {
-  Groceries: "bg-[#00F5A0] text-gray-900",
-  Dining: "bg-[#FF6B6B] text-white",
-  Utilities: "bg-[#A78BFA] text-white",
-  Transport: "bg-[#60A5FA] text-white",
-  Other: "bg-gray-200 text-gray-700",
+const CATEGORY_CONFIG: Record<string, { bg: string; dot: string; emoji: string }> = {
+  Groceries: { bg: "rgba(0,245,160,0.15)", dot: "#00C47D", emoji: "🛒" },
+  Dining:    { bg: "rgba(255,107,107,0.12)", dot: "#FF6B6B", emoji: "🍽️" },
+  Utilities: { bg: "rgba(167,139,250,0.15)", dot: "#A78BFA", emoji: "💡" },
+  Transport: { bg: "rgba(96,165,250,0.15)", dot: "#60A5FA", emoji: "🚗" },
+  Other:     { bg: "rgba(255,230,109,0.15)", dot: "#F59E0B", emoji: "📦" },
 };
+
+const AVATAR_GRADIENTS = [
+  "linear-gradient(135deg,#FF6B6B,#FF8E53)",
+  "linear-gradient(135deg,#A78BFA,#818CF8)",
+  "linear-gradient(135deg,#00F5A0,#00D9F5)",
+  "linear-gradient(135deg,#60A5FA,#818CF8)",
+];
 
 export function ExpenseForm({ periodId, expense }: Props) {
   const router = useRouter();
@@ -37,7 +44,7 @@ export function ExpenseForm({ periodId, expense }: Props) {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    amountRef.current?.focus();
+    setTimeout(() => amountRef.current?.focus(), 100);
     Promise.all([
       fetch("/api/categories").then((r) => r.json()),
       fetch("/api/members").then((r) => r.json()),
@@ -70,81 +77,91 @@ export function ExpenseForm({ periodId, expense }: Props) {
   const handleSave = async () => {
     if (!description || !amount || !categoryId || selectedMemberIds.length === 0) return;
     setSaving(true);
-
-    const payload = {
-      description,
-      amount: parseFloat(amount),
-      category_id: categoryId,
-      date,
-      period_id: periodId,
-      splits: computedSplits(),
-    };
-
+    const payload = { description, amount: parseFloat(amount), category_id: categoryId, date, period_id: periodId, splits: computedSplits() };
     const url = expense ? `/api/expenses/${expense.id}` : "/api/expenses";
     const method = expense ? "PUT" : "POST";
-
     await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
     router.push("/");
     router.refresh();
   };
 
-  const selectedCategory = categories.find((c) => c.id === categoryId);
-  const colorClass = selectedCategory ? (CATEGORY_COLORS[selectedCategory.name] ?? "bg-gray-200 text-gray-700") : "";
+  const isValid = description && amount && selectedMemberIds.length > 0;
+  const eachAmount = selectedMemberIds.length > 0 ? parseFloat(amount || "0") / selectedMemberIds.length : 0;
 
   return (
-    <div className="flex flex-col gap-5 px-4 py-6 max-w-lg mx-auto">
-      {/* Amount — big and prominent */}
-      <div className="card-bubble p-5">
-        <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Amount (฿)</label>
-        <input
-          ref={amountRef}
-          type="number"
-          inputMode="decimal"
-          placeholder="0.00"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          className="w-full text-4xl font-extrabold text-gray-900 outline-none mt-1 bg-transparent"
-        />
+    <div className="flex flex-col gap-4 px-4 py-5 max-w-lg mx-auto">
+
+      {/* Amount — hero input */}
+      <div
+        className="px-6 pt-6 pb-7 relative overflow-hidden"
+        style={{
+          background: "linear-gradient(135deg,#FF6B6B 0%,#FF8E53 60%,#FFB347 100%)",
+          borderRadius: "1.5rem",
+          boxShadow: "0 8px 32px rgba(255,107,107,0.3)",
+        }}
+      >
+        <div className="absolute -top-6 -right-6 w-28 h-28 rounded-full opacity-20" style={{ background: "white" }} />
+        <p className="text-white/70 text-xs font-800 uppercase tracking-widest mb-2">จำนวนเงิน</p>
+        <div className="flex items-baseline gap-2">
+          <span className="text-white/80 font-800 text-2xl">฿</span>
+          <input
+            ref={amountRef}
+            type="number"
+            inputMode="decimal"
+            placeholder="0"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            className="flex-1 font-900 text-white outline-none bg-transparent placeholder:text-white/40"
+            style={{ fontSize: "3rem", lineHeight: 1 }}
+          />
+        </div>
       </div>
 
       {/* Description */}
-      <div className="card-bubble p-5">
-        <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Description</label>
+      <div className="card-bubble px-5 py-4">
+        <p className="text-xs font-800 uppercase tracking-widest mb-2" style={{ color: "#9CA3AF" }}>รายละเอียด</p>
         <input
           type="text"
-          placeholder="e.g. Makro groceries"
+          placeholder="เช่น ซื้อของที่ Makro"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="w-full text-lg font-semibold text-gray-900 outline-none mt-1 bg-transparent"
+          className="w-full font-700 text-lg outline-none bg-transparent placeholder:font-500"
+          style={{ color: "#1A1A2E" }}
         />
       </div>
 
       {/* Date */}
-      <div className="card-bubble p-5">
-        <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Date</label>
+      <div className="card-bubble px-5 py-4">
+        <p className="text-xs font-800 uppercase tracking-widest mb-2" style={{ color: "#9CA3AF" }}>วันที่</p>
         <input
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="w-full text-base font-semibold text-gray-900 outline-none mt-1 bg-transparent"
+          className="w-full font-700 text-base outline-none bg-transparent"
+          style={{ color: "#1A1A2E" }}
         />
       </div>
 
       {/* Category chips */}
-      <div className="card-bubble p-5">
-        <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 block">Category</label>
+      <div className="card-bubble px-5 py-4">
+        <p className="text-xs font-800 uppercase tracking-widest mb-3" style={{ color: "#9CA3AF" }}>หมวดหมู่</p>
         <div className="flex flex-wrap gap-2">
           {categories.map((cat) => {
-            const color = CATEGORY_COLORS[cat.name] ?? "bg-gray-200 text-gray-700";
+            const cfg = CATEGORY_CONFIG[cat.name] ?? CATEGORY_CONFIG.Other;
             const isSelected = cat.id === categoryId;
             return (
               <button
                 key={cat.id}
                 onClick={() => setCategoryId(cat.id)}
-                className={`chip-active px-4 py-2 text-sm font-bold rounded-full border-2 transition-all ${
-                  isSelected ? `${color} border-transparent scale-105 shadow-md` : "bg-white border-gray-200 text-gray-500"
-                }`}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm font-700 transition-all duration-150"
+                style={{
+                  background: isSelected ? cfg.dot : "rgba(26,26,46,0.05)",
+                  color: isSelected ? "white" : "#6B7280",
+                  transform: isSelected ? "scale(1.05)" : "scale(1)",
+                  boxShadow: isSelected ? `0 3px 12px ${cfg.dot}50` : "none",
+                }}
               >
+                <span>{cfg.emoji}</span>
                 {cat.name}
               </button>
             );
@@ -153,24 +170,29 @@ export function ExpenseForm({ periodId, expense }: Props) {
       </div>
 
       {/* Member chips */}
-      <div className="card-bubble p-5">
-        <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 block">Split with</label>
+      <div className="card-bubble px-5 py-4">
+        <p className="text-xs font-800 uppercase tracking-widest mb-3" style={{ color: "#9CA3AF" }}>แบ่งกับ</p>
         <div className="flex flex-wrap gap-2">
-          {members.map((m) => {
+          {members.map((m, i) => {
             const isSelected = selectedMemberIds.includes(m.id);
-            const initials = m.name.slice(0, 2).toUpperCase();
+            const gradient = AVATAR_GRADIENTS[i % AVATAR_GRADIENTS.length];
             return (
               <button
                 key={m.id}
                 onClick={() => toggleMember(m.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full border-2 font-semibold text-sm transition-all ${
-                  isSelected
-                    ? "bg-[#FF6B6B] border-[#FF6B6B] text-white scale-105 shadow-md"
-                    : "bg-white border-gray-200 text-gray-500"
-                }`}
+                className="flex items-center gap-2 px-3.5 py-2 rounded-full font-700 text-sm transition-all duration-150"
+                style={{
+                  background: isSelected ? gradient : "rgba(26,26,46,0.05)",
+                  color: isSelected ? "white" : "#6B7280",
+                  transform: isSelected ? "scale(1.05)" : "scale(1)",
+                  boxShadow: isSelected ? "0 3px 12px rgba(255,107,107,0.3)" : "none",
+                }}
               >
-                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${isSelected ? "bg-white/20" : "bg-gray-100"}`}>
-                  {initials}
+                <span
+                  className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-900"
+                  style={{ background: isSelected ? "rgba(255,255,255,0.25)" : "rgba(26,26,46,0.08)" }}
+                >
+                  {m.name.slice(0, 1).toUpperCase()}
                 </span>
                 {m.name}
               </button>
@@ -179,49 +201,70 @@ export function ExpenseForm({ periodId, expense }: Props) {
         </div>
 
         {selectedMemberIds.length > 0 && (
-          <div className="mt-4">
-            <button
-              onClick={() => setIsCustomSplit((v) => !v)}
-              className="text-xs font-semibold text-[#FF6B6B] underline"
-            >
-              {isCustomSplit ? "Switch to equal split" : "Custom split amounts"}
-            </button>
-
-            {isCustomSplit ? (
-              <div className="mt-3 flex flex-col gap-2">
+          <div className="mt-4 pt-4 border-t border-gray-100">
+            {!isCustomSplit ? (
+              <div className="flex items-center justify-between">
+                <p className="font-600 text-sm" style={{ color: "#9CA3AF" }}>
+                  ฿{eachAmount.toFixed(2)} ต่อคน
+                </p>
+                <button
+                  onClick={() => setIsCustomSplit(true)}
+                  className="text-xs font-700 px-3 py-1.5 rounded-xl"
+                  style={{ background: "rgba(255,107,107,0.1)", color: "#FF6B6B" }}
+                >
+                  กำหนดเอง
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-xs font-800 uppercase tracking-widest" style={{ color: "#9CA3AF" }}>กำหนดยอดแต่ละคน</p>
+                  <button
+                    onClick={() => setIsCustomSplit(false)}
+                    className="text-xs font-700"
+                    style={{ color: "#FF6B6B" }}
+                  >
+                    แบ่งเท่ากัน
+                  </button>
+                </div>
                 {selectedMemberIds.map((id) => {
                   const m = members.find((m) => m.id === id);
                   return (
-                    <div key={id} className="flex items-center justify-between gap-3">
-                      <span className="text-sm font-medium text-gray-700">{m?.name}</span>
-                      <input
-                        type="number"
-                        inputMode="decimal"
-                        placeholder="0"
-                        value={customSplits[id] ?? ""}
-                        onChange={(e) => setCustomSplits((prev) => ({ ...prev, [id]: e.target.value }))}
-                        className="w-28 text-right border border-gray-200 rounded-xl px-3 py-1.5 text-sm font-semibold outline-none focus:border-[#FF6B6B]"
-                      />
+                    <div key={id} className="flex items-center justify-between gap-3 py-1">
+                      <span className="font-700 text-sm" style={{ color: "#1A1A2E" }}>{m?.name}</span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-sm font-600" style={{ color: "#9CA3AF" }}>฿</span>
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          placeholder="0"
+                          value={customSplits[id] ?? ""}
+                          onChange={(e) => setCustomSplits((prev) => ({ ...prev, [id]: e.target.value }))}
+                          className="w-24 text-right font-700 text-sm outline-none rounded-xl px-3 py-2"
+                          style={{
+                            background: "rgba(26,26,46,0.04)",
+                            color: "#1A1A2E",
+                            border: "1.5px solid rgba(26,26,46,0.08)",
+                          }}
+                        />
+                      </div>
                     </div>
                   );
                 })}
               </div>
-            ) : (
-              <p className="mt-2 text-sm text-gray-400">
-                ฿{(parseFloat(amount || "0") / selectedMemberIds.length).toFixed(2)} each
-              </p>
             )}
           </div>
         )}
       </div>
 
-      {/* Save button */}
+      {/* Save */}
       <button
         onClick={handleSave}
-        disabled={saving || !description || !amount || selectedMemberIds.length === 0}
-        className="btn-yellow w-full py-4 text-lg font-extrabold rounded-2xl shadow-lg disabled:opacity-40 active:scale-95 transition-all"
+        disabled={saving || !isValid}
+        className="btn-yellow w-full py-4 text-lg font-900 rounded-2xl disabled:opacity-40"
+        style={{ letterSpacing: "-0.01em", marginTop: "0.5rem" }}
       >
-        {saving ? "Saving..." : expense ? "Save Changes" : "Add Expense"}
+        {saving ? "กำลังบันทึก..." : expense ? "บันทึกการแก้ไข" : "เพิ่มรายจ่าย"}
       </button>
     </div>
   );

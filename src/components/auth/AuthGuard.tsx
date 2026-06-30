@@ -25,10 +25,13 @@ export function AuthGuard({ children, require = "any" }: Props) {
 
   if (!isReady) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-white">
+      <div className="flex items-center justify-center min-h-screen" style={{ background: "#FFF8F5" }}>
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-[#FF6B6B] animate-bounce" />
-          <p className="text-gray-500 font-medium">Loading...</p>
+          <div
+            className="w-14 h-14 rounded-3xl animate-bounce"
+            style={{ background: "linear-gradient(135deg,#FF6B6B,#FF8E53)", boxShadow: "0 6px 24px rgba(255,107,107,0.3)" }}
+          />
+          <p className="font-700 text-sm" style={{ color: "#9CA3AF" }}>กำลังโหลด...</p>
         </div>
       </div>
     );

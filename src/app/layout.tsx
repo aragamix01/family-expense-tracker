@@ -9,8 +9,12 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "Family Tracker",
+  title: "Family Tracker 💸",
   description: "Track family shared expenses easily",
+  icons: {
+    icon: "/icon.jpeg",
+    apple: "/apple-icon.jpeg",
+  },
 };
 
 export default function RootLayout({

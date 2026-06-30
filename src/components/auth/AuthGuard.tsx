@@ -4,6 +4,8 @@ import { useLiff } from "@/contexts/LiffContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
+const IS_DEV = process.env.NEXT_PUBLIC_DEV_MODE === "true";
+
 type Props = {
   children: React.ReactNode;
   require?: "admin" | "member" | "any";
@@ -14,7 +16,7 @@ export function AuthGuard({ children, require = "any" }: Props) {
   const router = useRouter();
 
   useEffect(() => {
-    if (!isReady) return;
+    if (!isReady || IS_DEV) return; // Skip redirects in dev mode
     if (require === "admin" && role !== "admin") {
       router.replace("/");
     }

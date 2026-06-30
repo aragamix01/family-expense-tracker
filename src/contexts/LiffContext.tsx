@@ -9,13 +9,15 @@ type LiffProfile = {
   pictureUrl?: string;
 };
 
-type Role = "admin" | "member" | "unregistered" | "loading";
+export type Role = "admin" | "member" | "unregistered" | "loading";
 
 type LiffContextValue = {
   liff: typeof Liff | null;
   profile: LiffProfile | null;
   role: Role;
   isReady: boolean;
+  // Dev mode only — no-op in production
+  setDevRole?: (role: Role) => void;
 };
 
 const LiffContext = createContext<LiffContextValue>({
@@ -25,6 +27,13 @@ const LiffContext = createContext<LiffContextValue>({
   isReady: false,
 });
 
+const IS_DEV = process.env.NEXT_PUBLIC_DEV_MODE === "true";
+
+const DEV_PROFILE: LiffProfile = {
+  userId: "dev-user-id",
+  displayName: "Dev User",
+};
+
 export function LiffProvider({ children }: { children: React.ReactNode }) {
   const [liff, setLiff] = useState<typeof Liff | null>(null);
   const [profile, setProfile] = useState<LiffProfile | null>(null);
@@ -32,6 +41,15 @@ export function LiffProvider({ children }: { children: React.ReactNode }) {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
+    if (IS_DEV) {
+      // Skip LIFF init entirely — start as admin in dev mode
+      const stored = localStorage.getItem("dev_role") as Role | null;
+      setProfile(DEV_PROFILE);
+      setRole(stored ?? "admin");
+      setIsReady(true);
+      return;
+    }
+
     const init = async () => {
       const liffModule = (await import("@line/liff")).default;
       await liffModule.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! });
@@ -55,7 +73,6 @@ export function LiffProvider({ children }: { children: React.ReactNode }) {
       if (p.userId === adminId) {
         setRole("admin");
       } else {
-        // Check if this LINE user is linked to a member
         const res = await fetch(`/api/members/by-line-id/${p.userId}`);
         setRole(res.ok ? "member" : "unregistered");
       }
@@ -66,8 +83,15 @@ export function LiffProvider({ children }: { children: React.ReactNode }) {
     init().catch(console.error);
   }, []);
 
+  const setDevRole = IS_DEV
+    ? (newRole: Role) => {
+        localStorage.setItem("dev_role", newRole);
+        setRole(newRole);
+      }
+    : undefined;
+
   return (
-    <LiffContext.Provider value={{ liff, profile, role, isReady }}>
+    <LiffContext.Provider value={{ liff, profile, role, isReady, setDevRole }}>
       {children}
     </LiffContext.Provider>
   );

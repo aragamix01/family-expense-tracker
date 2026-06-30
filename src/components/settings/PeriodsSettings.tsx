@@ -8,79 +8,91 @@ export function PeriodsSettings() {
   const [closing, setClosing] = useState(false);
   const [creating, setCreating] = useState(false);
 
-  const load = () => fetch("/api/periods").then((r) => r.json()).then(setPeriods);
+  const load = () => fetch("/api/periods").then(r => r.json()).then(setPeriods);
   useEffect(() => { load(); }, []);
 
-  const openPeriod = periods.find((p) => p.status === "open");
-  const closedPeriods = periods.filter((p) => p.status === "closed");
+  const openPeriod = periods.find(p => p.status === "open");
+  const closedPeriods = periods.filter(p => p.status === "closed");
 
   const handleClose = async () => {
-    if (!openPeriod) return;
-    if (!confirm(`Close "${openPeriod.name}"? This will archive the current period.`)) return;
+    if (!openPeriod || !confirm(`ปิดงวด "${openPeriod.name}"?`)) return;
     setClosing(true);
     await fetch(`/api/periods/${openPeriod.id}/close`, { method: "PUT" });
     await load();
     setClosing(false);
   };
 
-  const handleNewPeriod = async () => {
-    const name = prompt("Period name (e.g. July 2026):");
+  const handleNew = async () => {
+    const name = prompt("ชื่องวด (เช่น July 2026):");
     if (!name) return;
     setCreating(true);
-    await fetch("/api/periods", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name }),
-    });
+    await fetch("/api/periods", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name }) });
     await load();
     setCreating(false);
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Active period */}
+    <div className="flex flex-col gap-3">
       {openPeriod && (
-        <div className="card-bubble p-5" style={{ borderLeft: "4px solid #FFE66D" }}>
-          <div className="flex items-center justify-between">
+        <div className="glass p-5">
+          <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Active Period</p>
-              <p className="text-lg font-extrabold text-gray-900 mt-1">{openPeriod.name}</p>
-              <p className="text-xs text-gray-400 mt-0.5">Started {openPeriod.created_at.slice(0, 10)}</p>
+              <p className="text-xs font-800 uppercase tracking-widest mb-1" style={{ color: "rgba(255,255,255,0.4)" }}>งวดปัจจุบัน</p>
+              <p className="font-900 text-lg text-white">{openPeriod.name}</p>
+              <p className="text-xs font-500 mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>
+                เริ่ม {openPeriod.created_at.slice(0, 10)}
+              </p>
             </div>
-            <span className="text-xs font-bold bg-[#E6FFF7] text-[#00C47D] px-3 py-1.5 rounded-xl">OPEN</span>
+            <div
+              className="px-3 py-1.5 rounded-full text-xs font-800"
+              style={{ background: "rgba(52,211,153,0.18)", color: "#34D399", border: "1px solid rgba(52,211,153,0.3)" }}
+            >
+              เปิด
+            </div>
           </div>
           <button
             onClick={handleClose}
             disabled={closing}
-            className="mt-4 w-full btn-coral py-3 text-sm font-bold rounded-2xl disabled:opacity-40"
+            className="w-full py-3 text-sm font-800 rounded-2xl disabled:opacity-40"
+            style={{
+              background: "rgba(248,113,113,0.18)",
+              color: "#F87171",
+              border: "1px solid rgba(248,113,113,0.3)",
+            }}
           >
-            {closing ? "Closing..." : "Close Month ✓"}
+            {closing ? "กำลังปิด..." : "ปิดงวดนี้ ✓"}
           </button>
         </div>
       )}
 
       {!openPeriod && (
         <button
-          onClick={handleNewPeriod}
+          onClick={handleNew}
           disabled={creating}
-          className="btn-yellow w-full py-4 text-base font-extrabold rounded-2xl disabled:opacity-40"
+          className="btn-primary w-full py-4 text-base font-900 rounded-2xl disabled:opacity-40"
         >
-          {creating ? "Creating..." : "+ Start New Period"}
+          {creating ? "กำลังสร้าง..." : "+ เริ่มงวดใหม่"}
         </button>
       )}
 
-      {/* Past periods */}
       {closedPeriods.length > 0 && (
-        <div className="card-bubble p-5">
-          <h2 className="text-sm font-extrabold text-gray-900 mb-3">Past Periods</h2>
+        <div className="glass p-5">
+          <p className="text-xs font-800 uppercase tracking-widest mb-3" style={{ color: "rgba(255,255,255,0.4)" }}>งวดที่ผ่านมา</p>
           <div className="flex flex-col gap-2">
-            {closedPeriods.map((p) => (
-              <div key={p.id} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
+            {closedPeriods.map(p => (
+              <div key={p.id} className="flex items-center justify-between py-2.5" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
                 <div>
-                  <p className="font-semibold text-gray-800">{p.name}</p>
-                  <p className="text-xs text-gray-400">Closed {p.closed_at?.slice(0, 10)}</p>
+                  <p className="font-700 text-white">{p.name}</p>
+                  <p className="text-xs font-500 mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>
+                    ปิดเมื่อ {p.closed_at?.slice(0, 10)}
+                  </p>
                 </div>
-                <span className="text-xs font-bold text-gray-400 bg-gray-100 px-3 py-1.5 rounded-xl">CLOSED</span>
+                <div
+                  className="px-3 py-1 rounded-full text-xs font-700"
+                  style={{ background: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.35)" }}
+                >
+                  ปิด
+                </div>
               </div>
             ))}
           </div>

@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 import type { Category } from "@/lib/database.types";
 
-const CATEGORY_COLORS: Record<string, string> = {
-  Groceries: "bg-[#00F5A0] text-gray-900",
-  Dining: "bg-[#FF6B6B] text-white",
-  Utilities: "bg-[#A78BFA] text-white",
-  Transport: "bg-[#60A5FA] text-white",
-  Other: "bg-gray-200 text-gray-700",
+const CAT_CFG: Record<string, { color: string; emoji: string }> = {
+  Groceries: { color: "#34D399", emoji: "🛒" },
+  Dining:    { color: "#F472B6", emoji: "🍽️" },
+  Utilities: { color: "#818CF8", emoji: "💡" },
+  Transport: { color: "#60A5FA", emoji: "🚗" },
+  Other:     { color: "#FBBF24", emoji: "📦" },
 };
 
 export function CategoriesSettings() {
@@ -16,17 +16,13 @@ export function CategoriesSettings() {
   const [newName, setNewName] = useState("");
   const [adding, setAdding] = useState(false);
 
-  const load = () => fetch("/api/categories").then((r) => r.json()).then(setCategories);
+  const load = () => fetch("/api/categories").then(r => r.json()).then(setCategories);
   useEffect(() => { load(); }, []);
 
   const handleAdd = async () => {
     if (!newName.trim()) return;
     setAdding(true);
-    await fetch("/api/categories", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: newName.trim() }),
-    });
+    await fetch("/api/categories", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: newName.trim() }) });
     setNewName("");
     await load();
     setAdding(false);
@@ -34,31 +30,39 @@ export function CategoriesSettings() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="card-bubble p-4 flex gap-3">
+      <div className="glass px-4 py-3 flex gap-3 items-center">
         <input
           type="text"
-          placeholder="Add custom category..."
+          placeholder="เพิ่มหมวดหมู่ใหม่..."
           value={newName}
-          onChange={(e) => setNewName(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-          className="flex-1 font-semibold text-gray-900 outline-none bg-transparent placeholder:text-gray-300"
+          onChange={e => setNewName(e.target.value)}
+          onKeyDown={e => e.key === "Enter" && handleAdd()}
+          className="flex-1 font-700 text-white outline-none bg-transparent placeholder:text-white/25"
         />
         <button
           onClick={handleAdd}
           disabled={adding || !newName.trim()}
-          className="btn-coral px-4 py-2 text-sm disabled:opacity-40"
+          className="btn-primary px-4 py-2 text-sm rounded-xl disabled:opacity-40"
         >
-          Add
+          เพิ่ม
         </button>
       </div>
 
       <div className="flex flex-wrap gap-2">
-        {categories.map((cat) => {
-          const color = CATEGORY_COLORS[cat.name] ?? "bg-[#FFE66D] text-gray-900";
+        {categories.map(cat => {
+          const cfg = CAT_CFG[cat.name] ?? { color: "#818CF8", emoji: "✨" };
           return (
-            <div key={cat.id} className={`flex items-center gap-1.5 px-4 py-2 rounded-full font-bold text-sm ${color}`}>
-              {cat.name}
-              {cat.is_default && <span className="text-xs opacity-60 ml-1">default</span>}
+            <div
+              key={cat.id}
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-full font-700 text-sm"
+              style={{
+                background: `${cfg.color}20`,
+                color: cfg.color,
+                border: `1.5px solid ${cfg.color}40`,
+              }}
+            >
+              {cfg.emoji} {cat.name}
+              {cat.is_default && <span className="text-xs opacity-50 ml-1">·ค่าเริ่มต้น</span>}
             </div>
           );
         })}

@@ -5,30 +5,15 @@ import { useLiff } from "@/contexts/LiffContext";
 import { useActivePeriod } from "@/hooks/useActivePeriod";
 import type { Expense, Category, ExpenseSplit, Member } from "@/lib/database.types";
 
-type FullSplit = ExpenseSplit & {
-  expense: (Expense & { category?: Category }) | null;
-};
+type FullSplit = ExpenseSplit & { expense: (Expense & { category?: Category }) | null };
+type MemberData = { member: Member; totalOwed: number; splits: FullSplit[] };
 
-type MemberData = {
-  member: Member;
-  totalOwed: number;
-  splits: FullSplit[];
+const CAT_DOT: Record<string, string> = {
+  Groceries: "#34D399", Dining: "#F472B6", Utilities: "#818CF8",
+  Transport: "#60A5FA", Other: "#FBBF24",
 };
-
-const CATEGORY_COLORS: Record<string, string> = {
-  Groceries: "#00C47D",
-  Dining: "#FF6B6B",
-  Utilities: "#A78BFA",
-  Transport: "#60A5FA",
-  Other: "#F59E0B",
-};
-
-const CATEGORY_BG: Record<string, string> = {
-  Groceries: "rgba(0,196,125,0.12)",
-  Dining: "rgba(255,107,107,0.12)",
-  Utilities: "rgba(167,139,250,0.15)",
-  Transport: "rgba(96,165,250,0.15)",
-  Other: "rgba(245,158,11,0.12)",
+const CAT_EMOJI: Record<string, string> = {
+  Groceries: "🛒", Dining: "🍽️", Utilities: "💡", Transport: "🚗", Other: "📦",
 };
 
 export function MemberDashboard() {
@@ -39,92 +24,92 @@ export function MemberDashboard() {
   useEffect(() => {
     if (!period || !profile?.userId) return;
     fetch(`/api/dashboard/member/${profile.userId}?period_id=${period.id}`)
-      .then((r) => r.json())
-      .then(setData);
+      .then(r => r.json()).then(setData);
   }, [period, profile?.userId]);
 
-  const firstName = profile?.displayName?.split(" ")[0] ?? "Hey";
+  const firstName = profile?.displayName?.split(" ")[0] ?? "คุณ";
 
   return (
-    <div className="min-h-screen pb-10" style={{ background: "#FFF8F5" }}>
+    <div className="min-h-screen pb-10">
+      <div className="fixed pointer-events-none" style={{
+        top: "-20vw", right: "-20vw", width: "70vw", height: "70vw", borderRadius: "50%",
+        background: "radial-gradient(circle,rgba(99,102,241,0.35) 0%,transparent 70%)",
+      }} />
 
-      {/* Hero */}
-      <div
-        className="mx-4 mt-5 px-6 pt-6 pb-8 relative overflow-hidden"
-        style={{
-          background: "linear-gradient(135deg,#FF6B6B 0%,#FF8E53 60%,#FFB347 100%)",
-          borderRadius: "1.5rem",
-          boxShadow: "0 8px 32px rgba(255,107,107,0.3)",
-        }}
-      >
-        <div className="absolute -top-8 -right-8 w-36 h-36 rounded-full opacity-20" style={{ background: "white" }} />
-
-        <div className="relative z-10">
-          <p className="text-white/70 text-sm font-600 mb-5">สวัสดี {firstName} 👋</p>
-
-          <p className="text-white/70 text-xs font-800 uppercase tracking-widest mb-1">คุณค้างชำระ</p>
-          <p className="text-white font-900 leading-none" style={{ fontSize: "3.5rem" }}>
-            ฿{(data?.totalOwed ?? 0).toLocaleString()}
-          </p>
-
-          {period && (
-            <div
-              className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-2xl"
-              style={{ background: "rgba(255,255,255,0.2)" }}
-            >
-              <p className="text-white/80 text-sm font-700">{period.name}</p>
-            </div>
-          )}
-        </div>
+      {/* Header */}
+      <div className="glass-header sticky top-0 z-10 px-5 py-4">
+        <p className="text-xs font-700" style={{ color: "rgba(255,255,255,0.5)" }}>สวัสดี {firstName} 👋</p>
+        <p className="font-900 text-base text-white">ยอดของฉัน</p>
       </div>
 
-      <div className="px-4 pt-5 flex flex-col gap-4">
+      {/* Hero number */}
+      <div className="px-6 pt-10 pb-8">
+        {period && (
+          <div
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full mb-4 text-xs font-700"
+            style={{ background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.7)", border: "1px solid rgba(255,255,255,0.15)" }}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />
+            {period.name}
+          </div>
+        )}
+        <p className="text-sm font-600 mb-1" style={{ color: "rgba(255,255,255,0.5)" }}>คุณค้างชำระ</p>
+        <p
+          className="font-900 glow-number leading-none"
+          style={{ fontSize: "clamp(3rem,14vw,4.5rem)", color: "white", letterSpacing: "-0.02em" }}
+        >
+          ฿{(data?.totalOwed ?? 0).toLocaleString()}
+        </p>
+        {data?.member && (
+          <p className="text-sm font-600 mt-2" style={{ color: "rgba(255,255,255,0.4)" }}>
+            ให้ {data.member.name}
+          </p>
+        )}
+      </div>
+
+      <div className="px-4 flex flex-col gap-4">
         {data?.splits && data.splits.length > 0 && (
-          <div className="card-bubble p-5">
-            <p className="text-xs font-800 uppercase tracking-widest mb-4" style={{ color: "#9CA3AF" }}>รายละเอียด</p>
+          <div className="glass p-5">
+            <p className="text-xs font-800 uppercase tracking-widest mb-4" style={{ color: "rgba(255,255,255,0.4)" }}>รายละเอียด</p>
             <div className="flex flex-col gap-1">
-              {data.splits
-                .filter((s) => s.expense !== null)
-                .map((s) => {
-                  const catName = s.expense?.category?.name ?? "Other";
-                  const dotColor = CATEGORY_COLORS[catName] ?? "#D1D5DB";
-                  const dotBg = CATEGORY_BG[catName] ?? "rgba(209,213,219,0.15)";
-                  return (
-                    <div key={s.id} className="flex items-center justify-between py-3 px-1">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
-                          style={{ background: dotBg }}
-                        >
-                          <div className="w-2.5 h-2.5 rounded-full" style={{ background: dotColor }} />
-                        </div>
-                        <div>
-                          <p className="font-700 text-sm" style={{ color: "#1A1A2E" }}>{s.expense?.description}</p>
-                          <p className="text-xs font-500 mt-0.5" style={{ color: "#9CA3AF" }}>
-                            {s.expense?.date} · {catName}
-                          </p>
-                        </div>
+              {data.splits.filter(s => s.expense !== null).map(s => {
+                const catName = s.expense?.category?.name ?? "Other";
+                const dot = CAT_DOT[catName] ?? "#818CF8";
+                const emoji = CAT_EMOJI[catName] ?? "📦";
+                return (
+                  <div key={s.id} className="flex items-center justify-between py-3 px-2">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-9 h-9 rounded-2xl flex items-center justify-center text-base flex-shrink-0"
+                        style={{ background: "rgba(255,255,255,0.08)" }}
+                      >
+                        {emoji}
                       </div>
-                      <p className="font-900 text-sm" style={{ color: "#1A1A2E" }}>
-                        ฿{Number(s.amount).toLocaleString()}
-                      </p>
+                      <div>
+                        <p className="font-700 text-sm text-white">{s.expense?.description}</p>
+                        <p className="text-xs font-500 mt-0.5 flex items-center gap-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>
+                          <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: dot }} />
+                          {s.expense?.date} · {catName}
+                        </p>
+                      </div>
                     </div>
-                  );
-                })}
+                    <p className="font-900 text-sm" style={{ color: "#F472B6" }}>
+                      ฿{Number(s.amount).toLocaleString()}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
 
         {data?.splits?.length === 0 && (
           <div className="text-center py-16">
-            <div
-              className="w-20 h-20 rounded-3xl mx-auto mb-4 flex items-center justify-center text-3xl"
-              style={{ background: "rgba(0,196,125,0.12)" }}
-            >
+            <div className="w-20 h-20 rounded-3xl mx-auto mb-4 flex items-center justify-center text-3xl glass">
               ✅
             </div>
-            <p className="font-800 text-lg" style={{ color: "#1A1A2E" }}>ไม่มีรายการค้างชำระ!</p>
-            <p className="text-sm font-500 mt-1" style={{ color: "#9CA3AF" }}>ไม่มีรายการในงวดนี้</p>
+            <p className="font-800 text-lg text-white">ไม่มีรายการค้างชำระ!</p>
+            <p className="text-sm font-500 mt-1" style={{ color: "rgba(255,255,255,0.4)" }}>ไม่มีรายการในงวดนี้</p>
           </div>
         )}
       </div>

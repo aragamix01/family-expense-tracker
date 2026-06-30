@@ -16,19 +16,13 @@ type DashboardData = {
   memberDebts: MemberDebt[]; categoryBreakdown: CategoryBreakdown[]; recentExpenses: FullExpense[];
 };
 
-const CAT_DOT: Record<string, string> = {
-  Groceries: "#34D399", Dining: "#F472B6", Utilities: "#818CF8",
-  Transport: "#60A5FA", Other: "#FBBF24",
+const CAT_COLOR: Record<string, string> = {
+  Groceries: "#22C55E", Dining: "#EF4444", Utilities: "#8B5CF6",
+  Transport: "#3B82F6", Other: "#F59E0B",
 };
 const CAT_EMOJI: Record<string, string> = {
   Groceries: "🛒", Dining: "🍽️", Utilities: "💡", Transport: "🚗", Other: "📦",
 };
-const AVATAR_GRAD = [
-  "linear-gradient(135deg,#6366F1,#A78BFA)",
-  "linear-gradient(135deg,#3B82F6,#60A5FA)",
-  "linear-gradient(135deg,#EC4899,#F472B6)",
-  "linear-gradient(135deg,#10B981,#34D399)",
-];
 
 export function AdminDashboard() {
   const { profile } = useLiff();
@@ -55,94 +49,96 @@ export function AdminDashboard() {
   const firstName = profile?.displayName?.split(" ")[0] ?? "คุณ";
 
   return (
-    <div className="min-h-screen pb-28">
-      {/* Floating orbs for depth */}
-      <div className="fixed pointer-events-none" style={{
-        top: "-20vw", right: "-20vw", width: "70vw", height: "70vw",
-        borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(99,102,241,0.35) 0%, transparent 70%)",
-      }} />
-      <div className="fixed pointer-events-none" style={{
-        bottom: "10vw", left: "-15vw", width: "55vw", height: "55vw",
-        borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(59,130,246,0.25) 0%, transparent 70%)",
-      }} />
+    <div className="min-h-screen pb-28" style={{ background: "#EFEFEF" }}>
 
       {/* Header */}
-      <div className="glass-header sticky top-0 z-10 px-5 py-4 flex items-center justify-between">
+      <div className="app-header sticky top-0 z-10 px-5 py-3.5 flex items-center justify-between">
         <div>
-          <p className="text-xs font-700" style={{ color: "rgba(255,255,255,0.5)" }}>สวัสดี {firstName} 👋</p>
-          <p className="font-900 text-base" style={{ color: "white" }}>Family Tracker</p>
+          <p className="text-xs font-600" style={{ color: "#999" }}>สวัสดี {firstName} 👋</p>
+          <p className="font-900 text-sm" style={{ color: "#111" }}>Family Tracker</p>
         </div>
         <Link
           href="/settings"
-          className="w-10 h-10 flex items-center justify-center rounded-2xl btn-glass"
+          className="w-9 h-9 flex items-center justify-center rounded-2xl btn-ghost"
         >
-          <svg width="16" height="16" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+          <svg width="15" height="15" fill="none" stroke="#111" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="3"/>
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
           </svg>
         </Link>
       </div>
 
-      {/* Hero — naked number on gradient, no card */}
-      <div className="px-6 pt-10 pb-8 relative">
-        {period && (
-          <div
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full mb-4 text-xs font-700"
-            style={{ background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.7)", border: "1px solid rgba(255,255,255,0.15)" }}
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />
-            {period.name}
-          </div>
-        )}
-        <p className="text-sm font-600 mb-1" style={{ color: "rgba(255,255,255,0.5)" }}>ยอดที่ค้างชำระ</p>
-        <p
-          className="font-900 glow-number leading-none"
-          style={{ fontSize: "clamp(3rem,14vw,4.5rem)", color: "white", letterSpacing: "-0.02em" }}
-        >
-          ฿{(data?.totalOwed ?? 0).toLocaleString()}
-        </p>
-        <p className="text-sm font-600 mt-2" style={{ color: "rgba(255,255,255,0.45)" }}>
-          ใช้ไปทั้งหมด ฿{(data?.totalSpent ?? 0).toLocaleString()} งวดนี้
-        </p>
-      </div>
+      <div className="px-4 pt-4 flex flex-col gap-3">
 
-      <div className="px-4 flex flex-col gap-4">
+        {/* Hero — black card, lime total */}
+        <div
+          className="rounded-2xl px-5 pt-5 pb-6"
+          style={{ background: "#111111", boxShadow: "0 4px 20px rgba(0,0,0,0.18)" }}
+        >
+          <div className="flex items-start justify-between mb-5">
+            <div>
+              <p className="text-xs font-700 uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.4)" }}>
+                ยอดที่ค้างชำระ
+              </p>
+              <p
+                className="font-900 leading-none mt-1"
+                style={{ fontSize: "clamp(2.5rem,12vw,3.75rem)", color: "#C8FF00", letterSpacing: "-0.03em" }}
+              >
+                ฿{(data?.totalOwed ?? 0).toLocaleString()}
+              </p>
+            </div>
+            {period && (
+              <span className="pill-lime mt-1">{period.name}</span>
+            )}
+          </div>
+          <div className="divider" style={{ background: "rgba(255,255,255,0.1)" }} />
+          <div className="flex items-center justify-between mt-4">
+            <div>
+              <p className="text-xs font-600" style={{ color: "rgba(255,255,255,0.4)" }}>ใช้ไปทั้งหมด</p>
+              <p className="font-800 text-lg" style={{ color: "white" }}>฿{(data?.totalSpent ?? 0).toLocaleString()}</p>
+            </div>
+            <Link
+              href="/add"
+              className="btn-lime px-5 py-2.5 text-sm font-800 rounded-2xl"
+            >
+              + เพิ่มรายจ่าย
+            </Link>
+          </div>
+        </div>
 
         {/* Who owes */}
         {data?.memberDebts && data.memberDebts.length > 0 && (
-          <div className="glass p-5">
-            <p className="text-xs font-800 uppercase tracking-widest mb-4" style={{ color: "rgba(255,255,255,0.4)" }}>
+          <div className="card p-4">
+            <p className="text-xs font-800 uppercase tracking-widest mb-3" style={{ color: "#999" }}>
               ใครค้างชำระบ้าง
             </p>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col">
               {data.memberDebts.map((m, i) => (
-                <div key={m.memberId} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="w-10 h-10 flex items-center justify-center text-white font-900 text-sm flex-shrink-0"
-                      style={{ background: AVATAR_GRAD[i % AVATAR_GRAD.length], borderRadius: "0.875rem" }}
-                    >
-                      {m.name.slice(0, 2).toUpperCase()}
+                <div key={m.memberId}>
+                  {i > 0 && <div className="divider my-3" />}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="avatar w-9 h-9 text-sm font-900" style={{ borderRadius: "0.625rem" }}>
+                        {m.name.slice(0, 2).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="font-700 text-sm" style={{ color: "#111" }}>{m.name}</p>
+                        <p className="text-xs font-500" style={{ color: "#999" }}>ค้างชำระ</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-700 text-white">{m.name}</p>
-                      <p className="text-xs font-500" style={{ color: "rgba(255,255,255,0.4)" }}>ค้างชำระ</p>
+                    <div className="flex items-center gap-2">
+                      <p className="font-900 text-base" style={{ color: "#111" }}>
+                        ฿{m.amount.toLocaleString()}
+                      </p>
+                      <button
+                        onClick={() => handleSettle(m.memberId, m.name)}
+                        disabled={settling === m.memberId}
+                        className="pill-lime disabled:opacity-40"
+                        style={{ cursor: "pointer" }}
+                      >
+                        ชำระแล้ว
+                      </button>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <p className="font-900 text-lg" style={{ color: "#F472B6" }}>
-                      ฿{m.amount.toLocaleString()}
-                    </p>
-                    <button
-                      onClick={() => handleSettle(m.memberId, m.name)}
-                      disabled={settling === m.memberId}
-                      className="text-xs font-800 px-3 py-1.5 rounded-xl disabled:opacity-40 transition-opacity"
-                      style={{ background: "rgba(52,211,153,0.18)", color: "#34D399", border: "1px solid rgba(52,211,153,0.3)" }}
-                    >
-                      ชำระแล้ว
-                    </button>
                   </div>
                 </div>
               ))}
@@ -152,39 +148,40 @@ export function AdminDashboard() {
 
         {/* Recent expenses */}
         {data?.recentExpenses && data.recentExpenses.length > 0 && (
-          <div className="glass p-5">
-            <p className="text-xs font-800 uppercase tracking-widest mb-4" style={{ color: "rgba(255,255,255,0.4)" }}>
+          <div className="card p-4">
+            <p className="text-xs font-800 uppercase tracking-widest mb-3" style={{ color: "#999" }}>
               รายการล่าสุด
             </p>
-            <div className="flex flex-col gap-1">
-              {data.recentExpenses.map((e) => {
+            <div className="flex flex-col">
+              {data.recentExpenses.map((e, i) => {
                 const catName = e.category?.name ?? "Other";
-                const dot = CAT_DOT[catName] ?? "#818CF8";
+                const dot = CAT_COLOR[catName] ?? "#999";
                 const emoji = CAT_EMOJI[catName] ?? "📦";
                 return (
-                  <Link
-                    key={e.id}
-                    href={`/expenses/${e.id}/edit`}
-                    className="flex items-center justify-between py-3 px-2 rounded-xl transition-all active:opacity-60"
-                    style={{ background: "rgba(255,255,255,0)" }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-9 h-9 rounded-2xl flex items-center justify-center text-base flex-shrink-0"
-                        style={{ background: "rgba(255,255,255,0.08)" }}
-                      >
-                        {emoji}
+                  <div key={e.id}>
+                    {i > 0 && <div className="divider my-3" />}
+                    <Link
+                      href={`/expenses/${e.id}/edit`}
+                      className="flex items-center justify-between active:opacity-60"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-9 h-9 rounded-xl flex items-center justify-center text-base flex-shrink-0"
+                          style={{ background: "#F5F5F5" }}
+                        >
+                          {emoji}
+                        </div>
+                        <div>
+                          <p className="font-700 text-sm" style={{ color: "#111" }}>{e.description}</p>
+                          <p className="text-xs font-500 mt-0.5 flex items-center gap-1.5" style={{ color: "#999" }}>
+                            <span className="w-2 h-2 rounded-full inline-block flex-shrink-0" style={{ background: dot }} />
+                            {e.date} · {catName}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-700 text-sm text-white">{e.description}</p>
-                        <p className="text-xs font-500 mt-0.5 flex items-center gap-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>
-                          <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: dot }} />
-                          {e.date} · {catName}
-                        </p>
-                      </div>
-                    </div>
-                    <p className="font-900 text-sm text-white">฿{Number(e.amount).toLocaleString()}</p>
-                  </Link>
+                      <p className="font-900 text-sm" style={{ color: "#111" }}>฿{Number(e.amount).toLocaleString()}</p>
+                    </Link>
+                  </div>
                 );
               })}
             </div>
@@ -193,44 +190,29 @@ export function AdminDashboard() {
 
         {/* Category donut */}
         {data?.categoryBreakdown && data.categoryBreakdown.length > 0 && (
-          <div className="glass p-5">
-            <p className="text-xs font-800 uppercase tracking-widest mb-3" style={{ color: "rgba(255,255,255,0.4)" }}>
-              หมวดหมู่
-            </p>
+          <div className="card p-4">
+            <p className="text-xs font-800 uppercase tracking-widest mb-3" style={{ color: "#999" }}>หมวดหมู่</p>
             <CategoryDonut data={data.categoryBreakdown} />
           </div>
         )}
 
-        {/* Trend chart */}
-        <div className="glass p-5">
-          <p className="text-xs font-800 uppercase tracking-widest mb-3" style={{ color: "rgba(255,255,255,0.4)" }}>
-            แนวโน้ม
-          </p>
+        {/* Trend chart — extra bottom padding so Y-axis numbers show */}
+        <div className="card p-4 mb-4">
+          <p className="text-xs font-800 uppercase tracking-widest mb-3" style={{ color: "#999" }}>แนวโน้ม</p>
           <SpendingChart data={[{ month: period?.name?.slice(0, 3) ?? "Now", amount: data?.totalSpent ?? 0 }]} />
         </div>
 
         {/* Empty state */}
         {data?.recentExpenses?.length === 0 && (
-          <div className="text-center py-12">
-            <div
-              className="w-20 h-20 rounded-3xl mx-auto mb-4 flex items-center justify-center text-3xl glass"
-            >
+          <div className="card p-10 text-center">
+            <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center text-3xl" style={{ background: "#F5F5F5" }}>
               🧾
             </div>
-            <p className="font-800 text-lg text-white">ยังไม่มีรายการ</p>
-            <p className="text-sm font-500 mt-1" style={{ color: "rgba(255,255,255,0.4)" }}>แตะ + เพื่อเพิ่มรายการแรก</p>
+            <p className="font-800 text-base" style={{ color: "#111" }}>ยังไม่มีรายการ</p>
+            <p className="text-sm font-500 mt-1" style={{ color: "#999" }}>แตะ + เพื่อเพิ่มรายการแรก</p>
           </div>
         )}
       </div>
-
-      {/* FAB */}
-      <Link
-        href="/add"
-        className="btn-primary fixed bottom-6 right-5 w-16 h-16 rounded-3xl flex items-center justify-center text-3xl font-900"
-        style={{ boxShadow: "0 8px 32px rgba(99,102,241,0.5)" }}
-      >
-        +
-      </Link>
     </div>
   );
 }

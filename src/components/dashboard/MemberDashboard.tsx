@@ -8,9 +8,9 @@ import type { Expense, Category, ExpenseSplit, Member } from "@/lib/database.typ
 type FullSplit = ExpenseSplit & { expense: (Expense & { category?: Category }) | null };
 type MemberData = { member: Member; totalOwed: number; splits: FullSplit[] };
 
-const CAT_DOT: Record<string, string> = {
-  Groceries: "#34D399", Dining: "#F472B6", Utilities: "#818CF8",
-  Transport: "#60A5FA", Other: "#FBBF24",
+const CAT_COLOR: Record<string, string> = {
+  Groceries: "#22C55E", Dining: "#EF4444", Utilities: "#8B5CF6",
+  Transport: "#3B82F6", Other: "#F59E0B",
 };
 const CAT_EMOJI: Record<string, string> = {
   Groceries: "🛒", Dining: "🍽️", Utilities: "💡", Transport: "🚗", Other: "📦",
@@ -30,72 +30,65 @@ export function MemberDashboard() {
   const firstName = profile?.displayName?.split(" ")[0] ?? "คุณ";
 
   return (
-    <div className="min-h-screen pb-10">
-      <div className="fixed pointer-events-none" style={{
-        top: "-20vw", right: "-20vw", width: "70vw", height: "70vw", borderRadius: "50%",
-        background: "radial-gradient(circle,rgba(99,102,241,0.35) 0%,transparent 70%)",
-      }} />
-
+    <div className="min-h-screen pb-10" style={{ background: "#EFEFEF" }}>
       {/* Header */}
-      <div className="glass-header sticky top-0 z-10 px-5 py-4">
-        <p className="text-xs font-700" style={{ color: "rgba(255,255,255,0.5)" }}>สวัสดี {firstName} 👋</p>
-        <p className="font-900 text-base text-white">ยอดของฉัน</p>
+      <div className="app-header sticky top-0 z-10 px-5 py-3.5">
+        <p className="text-xs font-600" style={{ color: "#999" }}>สวัสดี {firstName} 👋</p>
+        <p className="font-900 text-sm" style={{ color: "#111" }}>ยอดของฉัน</p>
       </div>
 
-      {/* Hero number */}
-      <div className="px-6 pt-10 pb-8">
-        {period && (
-          <div
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full mb-4 text-xs font-700"
-            style={{ background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.7)", border: "1px solid rgba(255,255,255,0.15)" }}
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />
-            {period.name}
-          </div>
-        )}
-        <p className="text-sm font-600 mb-1" style={{ color: "rgba(255,255,255,0.5)" }}>คุณค้างชำระ</p>
-        <p
-          className="font-900 glow-number leading-none"
-          style={{ fontSize: "clamp(3rem,14vw,4.5rem)", color: "white", letterSpacing: "-0.02em" }}
+      <div className="px-4 pt-4 flex flex-col gap-3">
+        {/* Hero black card */}
+        <div
+          className="rounded-2xl px-5 pt-5 pb-6"
+          style={{ background: "#111", boxShadow: "0 4px 20px rgba(0,0,0,0.18)" }}
         >
-          ฿{(data?.totalOwed ?? 0).toLocaleString()}
-        </p>
-        {data?.member && (
-          <p className="text-sm font-600 mt-2" style={{ color: "rgba(255,255,255,0.4)" }}>
-            ให้ {data.member.name}
+          <div className="flex items-start justify-between mb-1">
+            <p className="text-xs font-700 uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.4)" }}>
+              คุณค้างชำระ
+            </p>
+            {period && <span className="pill-lime">{period.name}</span>}
+          </div>
+          <p
+            className="font-900 leading-none mt-1"
+            style={{ fontSize: "clamp(2.5rem,12vw,3.75rem)", color: "#C8FF00", letterSpacing: "-0.03em" }}
+          >
+            ฿{(data?.totalOwed ?? 0).toLocaleString()}
           </p>
-        )}
-      </div>
+          {data?.member && (
+            <p className="text-sm font-600 mt-2" style={{ color: "rgba(255,255,255,0.4)" }}>
+              ให้ {data.member.name}
+            </p>
+          )}
+        </div>
 
-      <div className="px-4 flex flex-col gap-4">
+        {/* Breakdown */}
         {data?.splits && data.splits.length > 0 && (
-          <div className="glass p-5">
-            <p className="text-xs font-800 uppercase tracking-widest mb-4" style={{ color: "rgba(255,255,255,0.4)" }}>รายละเอียด</p>
-            <div className="flex flex-col gap-1">
-              {data.splits.filter(s => s.expense !== null).map(s => {
+          <div className="card p-4">
+            <p className="text-xs font-800 uppercase tracking-widest mb-3" style={{ color: "#999" }}>รายละเอียด</p>
+            <div className="flex flex-col">
+              {data.splits.filter(s => s.expense !== null).map((s, i) => {
                 const catName = s.expense?.category?.name ?? "Other";
-                const dot = CAT_DOT[catName] ?? "#818CF8";
+                const dot = CAT_COLOR[catName] ?? "#999";
                 const emoji = CAT_EMOJI[catName] ?? "📦";
                 return (
-                  <div key={s.id} className="flex items-center justify-between py-3 px-2">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-9 h-9 rounded-2xl flex items-center justify-center text-base flex-shrink-0"
-                        style={{ background: "rgba(255,255,255,0.08)" }}
-                      >
-                        {emoji}
+                  <div key={s.id}>
+                    {i > 0 && <div className="divider my-3" />}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl flex items-center justify-center text-base flex-shrink-0" style={{ background: "#F5F5F5" }}>
+                          {emoji}
+                        </div>
+                        <div>
+                          <p className="font-700 text-sm" style={{ color: "#111" }}>{s.expense?.description}</p>
+                          <p className="text-xs font-500 mt-0.5 flex items-center gap-1.5" style={{ color: "#999" }}>
+                            <span className="w-2 h-2 rounded-full inline-block flex-shrink-0" style={{ background: dot }} />
+                            {s.expense?.date} · {catName}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-700 text-sm text-white">{s.expense?.description}</p>
-                        <p className="text-xs font-500 mt-0.5 flex items-center gap-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>
-                          <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: dot }} />
-                          {s.expense?.date} · {catName}
-                        </p>
-                      </div>
+                      <p className="font-900 text-sm" style={{ color: "#111" }}>฿{Number(s.amount).toLocaleString()}</p>
                     </div>
-                    <p className="font-900 text-sm" style={{ color: "#F472B6" }}>
-                      ฿{Number(s.amount).toLocaleString()}
-                    </p>
                   </div>
                 );
               })}
@@ -104,12 +97,10 @@ export function MemberDashboard() {
         )}
 
         {data?.splits?.length === 0 && (
-          <div className="text-center py-16">
-            <div className="w-20 h-20 rounded-3xl mx-auto mb-4 flex items-center justify-center text-3xl glass">
-              ✅
-            </div>
-            <p className="font-800 text-lg text-white">ไม่มีรายการค้างชำระ!</p>
-            <p className="text-sm font-500 mt-1" style={{ color: "rgba(255,255,255,0.4)" }}>ไม่มีรายการในงวดนี้</p>
+          <div className="card p-10 text-center">
+            <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center text-3xl" style={{ background: "#F5F5F5" }}>✅</div>
+            <p className="font-800 text-base" style={{ color: "#111" }}>ไม่มีรายการค้างชำระ!</p>
+            <p className="text-sm font-500 mt-1" style={{ color: "#999" }}>ไม่มีรายการในงวดนี้</p>
           </div>
         )}
       </div>

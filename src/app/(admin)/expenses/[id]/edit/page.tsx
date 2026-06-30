@@ -19,10 +19,7 @@ function EditExpenseContent({ params }: { params: Promise<{ id: string }> }) {
   useEffect(() => {
     params.then(({ id }) => {
       setId(id);
-      fetch(`/api/expenses/${id}`)
-        .then(r => r.json())
-        .then(setExpense)
-        .catch(console.error);
+      fetch(`/api/expenses/${id}`).then(r => r.json()).then(setExpense).catch(console.error);
     });
   }, [params]);
 
@@ -36,19 +33,19 @@ function EditExpenseContent({ params }: { params: Promise<{ id: string }> }) {
 
   return (
     <AuthGuard require="admin">
-      <div className="min-h-screen">
-        <div className="glass-header sticky top-0 z-10 px-4 py-4 flex items-center justify-between">
+      <div className="min-h-screen" style={{ background: "#EFEFEF" }}>
+        <div className="app-header sticky top-0 z-10 px-4 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/" className="w-9 h-9 flex items-center justify-center font-700 text-base text-white btn-glass rounded-2xl active:opacity-60">
+            <Link href="/" className="w-9 h-9 flex items-center justify-center font-700 text-base btn-ghost rounded-2xl active:opacity-60" style={{ color: "#111" }}>
               ←
             </Link>
-            <h1 className="font-900 text-lg text-white">แก้ไขรายจ่าย</h1>
+            <h1 className="font-900 text-base" style={{ color: "#111" }}>แก้ไขรายจ่าย</h1>
           </div>
           <button
             onClick={handleDelete}
             disabled={deleting}
             className="text-xs font-800 px-3 py-1.5 rounded-xl disabled:opacity-40"
-            style={{ background: "rgba(248,113,113,0.18)", color: "#F87171", border: "1px solid rgba(248,113,113,0.3)" }}
+            style={{ background: "#FEE2E2", color: "#EF4444", border: "1px solid #FECACA" }}
           >
             {deleting ? "กำลังลบ..." : "ลบ"}
           </button>
@@ -57,7 +54,7 @@ function EditExpenseContent({ params }: { params: Promise<{ id: string }> }) {
           <ExpenseForm periodId={expense.period_id} expense={expense} />
         ) : (
           <div className="flex justify-center py-20">
-            <div className="w-8 h-8 rounded-2xl animate-bounce" style={{ background: "linear-gradient(135deg,#6366F1,#818CF8)" }} />
+            <div className="w-8 h-8 rounded-2xl animate-bounce" style={{ background: "#111" }} />
           </div>
         )}
       </div>
@@ -66,9 +63,5 @@ function EditExpenseContent({ params }: { params: Promise<{ id: string }> }) {
 }
 
 export default function EditExpensePage({ params }: { params: Promise<{ id: string }> }) {
-  return (
-    <LiffProvider>
-      <EditExpenseContent params={params} />
-    </LiffProvider>
-  );
+  return <LiffProvider><EditExpenseContent params={params} /></LiffProvider>;
 }

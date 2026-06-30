@@ -13,28 +13,26 @@ const TAB_LABELS: Record<Tab, string> = { members: "สมาชิก", categor
 
 function SettingsContent() {
   const [tab, setTab] = useState<Tab>("members");
-
   return (
     <AuthGuard require="admin">
-      <div className="min-h-screen">
-        <div className="glass-header sticky top-0 z-10 px-4 py-4 flex items-center gap-3">
-          <Link href="/" className="w-9 h-9 flex items-center justify-center font-700 text-base text-white btn-glass rounded-2xl active:opacity-60">
+      <div className="min-h-screen" style={{ background: "#EFEFEF" }}>
+        <div className="app-header sticky top-0 z-10 px-4 py-3.5 flex items-center gap-3">
+          <Link href="/" className="w-9 h-9 flex items-center justify-center font-700 text-base btn-ghost rounded-2xl active:opacity-60" style={{ color: "#111" }}>
             ←
           </Link>
-          <h1 className="font-900 text-lg text-white">ตั้งค่า</h1>
+          <h1 className="font-900 text-base" style={{ color: "#111" }}>ตั้งค่า</h1>
         </div>
 
-        <div className="flex gap-2 px-4 py-4">
+        <div className="flex gap-2 px-4 py-3">
           {(["members", "categories", "periods"] as Tab[]).map(t => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className="flex-1 py-2.5 text-sm font-800 transition-all duration-150 rounded-2xl"
+              className="flex-1 py-2.5 text-sm font-800 rounded-2xl transition-all duration-100"
               style={{
-                background: tab === t ? "linear-gradient(135deg,#6366F1,#818CF8)" : "rgba(255,255,255,0.07)",
-                color: tab === t ? "white" : "rgba(255,255,255,0.45)",
-                boxShadow: tab === t ? "0 4px 16px rgba(99,102,241,0.4)" : "none",
-                border: tab === t ? "none" : "1.5px solid rgba(255,255,255,0.08)",
+                background: tab === t ? "#111" : "#F5F5F5",
+                color: tab === t ? "white" : "#555",
+                border: tab === t ? "none" : "1px solid #E2E2E2",
               }}
             >
               {TAB_LABELS[t]}

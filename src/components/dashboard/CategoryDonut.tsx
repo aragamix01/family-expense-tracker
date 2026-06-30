@@ -5,7 +5,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recha
 type CategoryData = { categoryId: string; name: string; amount: number };
 type Props = { data: CategoryData[] };
 
-const COLORS = ["#818CF8", "#34D399", "#F472B6", "#60A5FA", "#FBBF24", "#A78BFA"];
+const COLORS = ["#111111", "#555555", "#999999", "#C8FF00", "#E2E2E2", "#888888"];
 
 export function CategoryDonut({ data }: Props) {
   if (!data.length) return null;
@@ -17,12 +17,19 @@ export function CategoryDonut({ data }: Props) {
         </Pie>
         <Tooltip
           formatter={(v) => [`฿${Number(v).toLocaleString()}`, ""]}
-          contentStyle={{ borderRadius: "1rem", border: "1px solid rgba(255,255,255,0.15)", background: "rgba(30,56,138,0.9)", backdropFilter: "blur(16px)", fontWeight: 600, color: "white" }}
+          contentStyle={{
+            borderRadius: "0.75rem",
+            border: "1px solid #E2E2E2",
+            background: "white",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
+            fontWeight: 700,
+            color: "#111",
+          }}
         />
         <Legend
           iconType="circle"
           iconSize={8}
-          formatter={v => <span style={{ fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.65)" }}>{v}</span>}
+          formatter={v => <span style={{ fontSize: 12, fontWeight: 600, color: "#555" }}>{v}</span>}
         />
       </PieChart>
     </ResponsiveContainer>

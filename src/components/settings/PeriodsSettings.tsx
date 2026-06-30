@@ -17,9 +17,7 @@ export function PeriodsSettings() {
   const handleClose = async () => {
     if (!openPeriod || !confirm(`ปิดงวด "${openPeriod.name}"?`)) return;
     setClosing(true);
-    await fetch(`/api/periods/${openPeriod.id}/close`, { method: "PUT" });
-    await load();
-    setClosing(false);
+    await fetch(`/api/periods/${openPeriod.id}/close`, { method: "PUT" }); await load(); setClosing(false);
   };
 
   const handleNew = async () => {
@@ -27,38 +25,26 @@ export function PeriodsSettings() {
     if (!name) return;
     setCreating(true);
     await fetch("/api/periods", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name }) });
-    await load();
-    setCreating(false);
+    await load(); setCreating(false);
   };
 
   return (
     <div className="flex flex-col gap-3">
       {openPeriod && (
-        <div className="glass p-5">
+        <div className="card p-4">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-xs font-800 uppercase tracking-widest mb-1" style={{ color: "rgba(255,255,255,0.4)" }}>งวดปัจจุบัน</p>
-              <p className="font-900 text-lg text-white">{openPeriod.name}</p>
-              <p className="text-xs font-500 mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>
-                เริ่ม {openPeriod.created_at.slice(0, 10)}
-              </p>
+              <p className="text-xs font-700 uppercase tracking-widest mb-1" style={{ color: "#999" }}>งวดปัจจุบัน</p>
+              <p className="font-900 text-base" style={{ color: "#111" }}>{openPeriod.name}</p>
+              <p className="text-xs font-500 mt-0.5" style={{ color: "#999" }}>เริ่ม {openPeriod.created_at.slice(0, 10)}</p>
             </div>
-            <div
-              className="px-3 py-1.5 rounded-full text-xs font-800"
-              style={{ background: "rgba(52,211,153,0.18)", color: "#34D399", border: "1px solid rgba(52,211,153,0.3)" }}
-            >
-              เปิด
-            </div>
+            <span className="pill-lime">เปิด</span>
           </div>
           <button
             onClick={handleClose}
             disabled={closing}
             className="w-full py-3 text-sm font-800 rounded-2xl disabled:opacity-40"
-            style={{
-              background: "rgba(248,113,113,0.18)",
-              color: "#F87171",
-              border: "1px solid rgba(248,113,113,0.3)",
-            }}
+            style={{ background: "#FEE2E2", color: "#EF4444", border: "1px solid #FECACA" }}
           >
             {closing ? "กำลังปิด..." : "ปิดงวดนี้ ✓"}
           </button>
@@ -66,32 +52,24 @@ export function PeriodsSettings() {
       )}
 
       {!openPeriod && (
-        <button
-          onClick={handleNew}
-          disabled={creating}
-          className="btn-primary w-full py-4 text-base font-900 rounded-2xl disabled:opacity-40"
-        >
+        <button onClick={handleNew} disabled={creating} className="btn-ink w-full py-4 text-base font-900 rounded-2xl disabled:opacity-30">
           {creating ? "กำลังสร้าง..." : "+ เริ่มงวดใหม่"}
         </button>
       )}
 
       {closedPeriods.length > 0 && (
-        <div className="glass p-5">
-          <p className="text-xs font-800 uppercase tracking-widest mb-3" style={{ color: "rgba(255,255,255,0.4)" }}>งวดที่ผ่านมา</p>
-          <div className="flex flex-col gap-2">
-            {closedPeriods.map(p => (
-              <div key={p.id} className="flex items-center justify-between py-2.5" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                <div>
-                  <p className="font-700 text-white">{p.name}</p>
-                  <p className="text-xs font-500 mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>
-                    ปิดเมื่อ {p.closed_at?.slice(0, 10)}
-                  </p>
-                </div>
-                <div
-                  className="px-3 py-1 rounded-full text-xs font-700"
-                  style={{ background: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.35)" }}
-                >
-                  ปิด
+        <div className="card p-4">
+          <p className="text-xs font-700 uppercase tracking-widest mb-3" style={{ color: "#999" }}>งวดที่ผ่านมา</p>
+          <div className="flex flex-col">
+            {closedPeriods.map((p, i) => (
+              <div key={p.id}>
+                {i > 0 && <div className="divider my-3" />}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-700 text-sm" style={{ color: "#111" }}>{p.name}</p>
+                    <p className="text-xs font-500 mt-0.5" style={{ color: "#999" }}>ปิดเมื่อ {p.closed_at?.slice(0, 10)}</p>
+                  </div>
+                  <span className="pill-gray">ปิด</span>
                 </div>
               </div>
             ))}
